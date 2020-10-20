@@ -1,0 +1,72 @@
+---
+title: "methaneProject"
+author: "Rink"
+date: "10/20/2020"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(gapminder)
+
+# Added new column to calculate difference between methance conc column and total.methane.conc column
+# compacted new data frame (methane.new)
+
+kable(head(
+  methane.new <-
+  methane_data %>%
+  mutate(conc.diff = total.methane.conc - methane.conc) %>%
+    select(day, rep.no, treatment.control, time, conc.diff)
+))
+```
+
+
+### Data organised by treat/control, Day to show rep means for each time point
+```{r}
+kable(
+  methane.new %>%
+    group_by(treatment.control, day, time) %>%
+    summarise(mean(conc.diff))
+  )
+```
+
+### Select CONTROL data from dataset (Day 1)
+```{r}
+kable(
+  onlycontrol1 <- methane.new %>%
+  filter(treatment.control == "c", day == 1)
+)
+```
+
+### Plot CONTROL methane emissionsby day over 0-90 minute- Day 1
+```{r}
+ggplot(onlycontrol1, aes(x = time, y = conc.diff, colour = factor(rep.no))) + geom_point() +
+    stat_smooth(method = "lm", formula = y ~ x, se = FALSE)
+
+# confidence interval around each time point from the 4 reps/time point
+ggplot(data = onlycontrol1) +
+  geom_point(mapping = aes(x = time, y = conc.diff, color = rep.no)) +
+  geom_smooth(mapping = aes(x = time, y = conc.diff))
+```
+
+### Plot CONTROL methane emissionsby day over 0-90 minute- Day 2
+```{r}
+# Select only Day 2 data:
+kable(
+  onlycontrol2 <- methane.new %>%
+  filter(treatment.control == "c", day == 2)
+)
+
+# Plot Day 2 data CONTROL
+
+ggplot(onlycontrol2, aes(x = time, y = conc.diff, colour = factor(rep.no))) + geom_point() +
+    stat_smooth(method = "lm", formula = y ~ x, se = FALSE)
+
+# confidence interval around each time point from the 4 reps/time point
+ggplot(data = onlycontrol2) +
+  geom_point(mapping = aes(x = time, y = conc.diff, color = rep.no)) +
+  geom_smooth(mapping = aes(x = time, y = conc.diff))
+
+```
+
