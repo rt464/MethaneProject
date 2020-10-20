@@ -1,0 +1,33 @@
+---
+title: "MethaneProject"
+author: "Rink"
+date: "10/20/2020"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(gapminder)
+
+# Added new column to calculate difference between methance conc column and total.methane.conc column
+# compacted new data frame (methane.new)
+
+kable(head(
+  methane.new <-
+  methane_data %>%
+  mutate(conc.diff = total.methane.conc - methane.conc) %>%
+    select(day, rep.no, treatment.control, time, conc.diff)
+))
+```
+
+
+### Data organised by 
+```{r}
+kable(
+  methane.new %>%
+    group_by(treatment.control, day, time) %>%
+    summarise(mean(conc.diff))
+  )
+
+  ```
