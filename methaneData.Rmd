@@ -22,7 +22,7 @@ kable(head(
 ```
 
 
-### Data organised by treat/control, Day to show rep means for each time point
+### Data organised by treat/control, and Day to show rep means for each time point
 ```{r}
 kable(
   methane.new %>%
@@ -31,16 +31,16 @@ kable(
   )
 ```
 
-### Select CONTROL data from dataset (Day 1)
+### Plot CONTROL methane emissionsby day over 0-90 minute - (Day 1)
 ```{r}
+# Select only Day 2 data:
 kable(
   onlycontrol1 <- methane.new %>%
   filter(treatment.control == "c", day == 1)
 )
-```
 
-### Plot CONTROL methane emissionsby day over 0-90 minute- Day 1
-```{r}
+# Plot Day 2 data CONTROL
+
 ggplot(onlycontrol1, aes(x = time, y = conc.diff, colour = factor(rep.no))) + geom_point() +
     stat_smooth(method = "lm", formula = y ~ x, se = FALSE)
 
@@ -50,7 +50,8 @@ ggplot(data = onlycontrol1) +
   geom_smooth(mapping = aes(x = time, y = conc.diff))
 ```
 
-### Plot CONTROL methane emissionsby day over 0-90 minute- Day 2
+
+### Plot CONTROL methane emissions by day over 0-90 minute- Day 2
 ```{r}
 # Select only Day 2 data:
 kable(
@@ -67,6 +68,36 @@ ggplot(onlycontrol2, aes(x = time, y = conc.diff, colour = factor(rep.no))) + ge
 ggplot(data = onlycontrol2) +
   geom_point(mapping = aes(x = time, y = conc.diff, color = rep.no)) +
   geom_smooth(mapping = aes(x = time, y = conc.diff))
+
+```
+
+### Plot CONTROL data over time - mean difference in CONTROL methane emissions between Day 1 & 2
+```{r}
+# Select CONTROL data for Day 1 & 2; mean CH4/time point
+kable(
+  control <- methane.new %>%
+    group_by(treatment.control, day, time) %>%
+    filter(treatment.control == "c") %>%
+   summarise(mean(conc.diff))
+)
+
+# Put CONTROL data for Day 1&2 into dataframe - then can use ggplot
+con12 <- data.frame(control)
+
+  # Rename column variable titles
+con123 <- con12 %>% 
+  rename(
+    condata = mean.conc.diff.
+        )
+```
+
+```{r}
+# using ggplot to show relationship between emissions and time in Day 1 & 2
+con123 <- data.frame(con12)
+
+group_by(con123, day) %>%
+  ggplot() +
+    geom_line(mapping = aes(x = time, y = condata, color = day))
 
 ```
 
